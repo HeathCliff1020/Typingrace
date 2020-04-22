@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Typing Game</title>
+
+	<!-- Adding socket.io javascript file -->
+	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+	<style type="text/css">
+		
+		#mainDiv
+		{
+			margin-left: auto;
+			margin-right: auto;
+			border: 1px solid black;
+		}
+
+		.container
+		{
+			width : 670px;
+			height : 240px;
+			border: 4px solid black;
+			margin: 40px auto;
+			background: #bec3cc;
+		}
+		.type
+		{
+			margin: auto auto;
+			width: 650px;
+			height: 220px;
+			background: rgba(0, 0, 0, 0);
+			margin: 10px 10px;  
+			font-size: 23px;
+		}
+
+		.error
+		{
+			color: red;
+			padding-left: 2px;
+			font-weight: 600;
+		}
+
+		.normalText
+		{
+			padding-left: 2px;
+			color: #403400;
+			font-weight: 600;
+		}
+
+		.inactive
+		{
+			color: grey;
+			padding-left: 2px;
+			font-weight: 600;
+		}
+
+		.expected
+		{
+			color: white;
+			font-weight: 600;
+			background-color: rgba(0, 0, 0, 0.2);
+			padding-left: 2px;
+		}
+
+		#mainDiv
+		{
+			display : none;
+		}
+
+	</style>
+
+</head>
+<body>
+
+	<!-- Sign in div -->
+	<div id="singInDiv">
+
+		<form id="signIn" name="signInForm">
+			
+			<input type="text" id="username" />
+			<input type="password" id="password" />
+
+			<input type="submit" value="Login" id="loginButton" />
+
+		</form>
+
+	</div>
+
+	<!-- Sign in div -->
+
+
+
+	<!-- This will be shown after successful login -->
+	<div id="mainDiv">
+		
+		<div id="playerList">
+		</div>
+
+		<div class="container">
+			<div id="typingWindow" class="type"></div>
+		</div>
+
+		<center>
+			<button id="button" onclick="start();">Start Typing</button>
+		</center>
+
+	</div>
+
+
+	<!-- Javascript code -->
+	<script type="text/javascript" src="/client/js/players.js"></script>
+	<script type="text/javascript" src="/client/js/main.js"></script>
+
+</body>
+</html>
