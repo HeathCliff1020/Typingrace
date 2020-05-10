@@ -22,6 +22,9 @@ var io = require('socket.io')(serv, {});
 //this will store all the info for a race and manages each round
 let race = null;
 
+//for the setInterval function to update the stats
+let updateLoop;
+
 var SOCKET_LIST = [];
 
 //this is just a test text
@@ -36,7 +39,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('signInRequest', function(data){
 
 		//currently no database check and stuff
-		
+
 
 		// checking if it is the first player to sign
 		// and making the first player the admin
@@ -44,7 +47,7 @@ io.sockets.on('connection', function(socket){
 			socket.emit('singInSuccess', {ID : socket.id, isAdmin : true});
 		else
 			socket.emit('singInSuccess', {ID : socket.id, isAdmin : false});
-		
+
 
 		//sending the data of the new player to all the existing players
 		for (var i in SOCKET_LIST)
@@ -61,8 +64,8 @@ io.sockets.on('connection', function(socket){
 			Player.addPlayerAsAdmin(socket, data.username);
 		else
 			Player.addPlayer(socket, data.username);
-		
-		console.log(Player.admin.id);
+
+		//console.log(Player.admin.id);
 		/*
 		for (var i in Player.list)
 		{
@@ -76,7 +79,7 @@ io.sockets.on('connection', function(socket){
 
 	//test code
 
-	//sending the text to type when admin clicks on start	
+	//sending the text to type when admin clicks on start
 	socket.on('startRace', function(){
 		//cheking is it actually the admin
 		if (socket.id == Player.admin.id)
@@ -104,8 +107,22 @@ io.sockets.on('connection', function(socket){
 			}
 
 			//instantiate the race which will
-			race = Race(5, Player.list);
-			race.startRound(Player.list, SOCKET_LIST); 	
+			race = Race(2, Player.list, SOCKET_LIST);
+			race.startRound(Player.list, SOCKET_LIST);
+
+			updateList = setInterval(function() {
+				if (race)
+				{
+					race.sendUpdate(Player.list, SOCKET_LIST);
+				}
+
+				//checking if the race is FINISHED
+				if (race.status == 'FINISHED')
+				{
+					clearInterval(updateList);
+					race = null;
+				}
+			}, 300);
 		}
 		else
 			console.log("Not the admin");
@@ -113,10 +130,18 @@ io.sockets.on('connection', function(socket){
 
 	//when a player finishes a round
 	socket.on('roundComplete', function(time){
-		
+
 		if (race)
 		{
 			race.updateTime(socket.id, time, Player.list, SOCKET_LIST, Player.admin);
+		}
+	});
+
+	//changes the completion percantage of the players
+	socket.on('changePercentage', function(data){
+		if (race)
+		{
+			race.changePercentage(socket.id, data);
 		}
 	});
 
@@ -131,7 +156,7 @@ io.sockets.on('connection', function(socket){
 		//deleting the socket from the socket list
 		delete SOCKET_LIST[id];
 
-		//if the disconnected socket was also logged in 
+		//if the disconnected socket was also logged in
 		console.log(Player.list[id]);
 		if (Player.list[id])
 		{
@@ -148,7 +173,7 @@ io.sockets.on('connection', function(socket){
 			// if the disconnected player is the admin change the admin
 			if (id === Player.admin.id)
 			{
-				//if some palyer is left to be the made the admin 
+				//if some palyer is left to be the made the admin
 				if (Object.keys(Player.list).length !== 0)
 				{
 					for (let I in Player.list)
@@ -159,8 +184,9 @@ io.sockets.on('connection', function(socket){
 						// for making the first element in the player list the admin
 						Player.list[I].isAdmin = true;
 						Player.admin = Player.list[I];
-						//enabling the start button for the new admin
-						SOCKET_LIST[I].emit('enableStartButton');
+						//enabling the start button for the new admin if race was not started
+						if (race === null || race.status === 'FINISHED')
+							SOCKET_LIST[I].emit('enableStartButton');
 
 						break;
 					}
@@ -170,6 +196,19 @@ io.sockets.on('connection', function(socket){
 			}
 			else if (Object.keys(Player.list).length === 0)
 				Player.admin = null;
+		}
+
+		if (race)
+		{
+			if (Player.admin === null)
+			{
+				clearInterval(updateList);
+				race = null;
+			}
+			else
+			{
+				race.deletePlayer(id, Player.list, SOCKET_LIST, Player.admin);
+			}
 		}
 
 	});

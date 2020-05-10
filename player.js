@@ -8,7 +8,6 @@ Player = function(ID, USERNAME)
 		isAdmin : false,
 
 		//test result
-		res : 10,
 		canRace : false,
 	}
 
