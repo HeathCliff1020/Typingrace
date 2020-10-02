@@ -12,19 +12,17 @@ Race = function (rounds, players, sockets) {
         //paragraphs for the players to type
         //evantually the paragraphs will be extracter from a database
         texts: [
-            "asdf",
-            "asdf",
+            "Do␣one␣thing␣every␣day␣that␣scares␣you.",
+            "The␣quick␣brown␣fox␣jumps␣over␣the␣lazy␣dog.",
             "Paragraphs␣are␣the␣building␣blocks␣of␣papers.␣Many␣students␣define␣paragraphs␣in␣terms␣of␣length:␣a␣paragraph␣is␣a␣group␣of␣at␣least␣five␣sentences,␣a␣paragraph␣is␣half␣a␣page␣long,␣etc.␣In␣reality,␣though,␣the.",
-            "long␣long",
-            "Paragraph",
-            "sentences",
-            "Pa",
-            "the.",
-            "Paragraphs␣are␣the␣building␣blocks␣of␣papers.␣Many␣students␣define␣paragraphs␣in␣terms␣of␣length:␣a␣paragraph␣is␣a␣group␣of␣at␣least␣five␣sentences,␣a␣paragraph␣is␣half␣a␣page␣long,␣etc.␣In␣reality,␣though,␣the.",
-            "Paragraphs␣are␣the␣building␣blocks␣of␣papers.␣Many␣students␣define␣paragraphs␣in␣terms␣of␣length:␣a␣paragraph␣is␣a␣group␣of␣at␣least␣five␣sentences,␣a␣paragraph␣is␣half␣a␣page␣long,␣etc.␣In␣reality,␣though,␣the.",
-            "Paragraphs␣are␣the␣building␣blocks␣of␣papers.␣Many␣students␣define␣paragraphs␣in␣terms␣of␣length:␣a␣paragraph␣is␣a␣group␣of␣at␣least␣five␣sentences,␣a␣paragraph␣is␣half␣a␣page␣long,␣etc.␣In␣reality,␣though,␣the.",
-            "Paragraphs␣are␣the␣building␣blocks␣of␣papers.␣Many␣students␣define␣paragraphs␣in␣terms␣of␣length:␣a␣paragraph␣is␣a␣group␣of␣at␣least␣five␣sentences,␣a␣paragraph␣is␣half␣a␣page␣long,␣etc.␣In␣reality,␣though,␣the.",
-            "Paragraphs␣are␣the␣building␣blocks␣of␣papers.␣Many␣students␣define␣paragraphs␣in␣terms␣of␣length:␣a␣paragraph␣is␣a␣group␣of␣at␣least␣five␣sentences,␣a␣paragraph␣is␣half␣a␣page␣long,␣etc.␣In␣reality,␣though,␣the.",
+            "The␣secret␣of␣getting␣ahead␣is␣getting␣started.",
+            "Hustle␣in␣silence␣and␣let␣your␣success␣make␣the␣noise.",
+            "All␣our␣dreams␣can␣come␣true,␣if␣we␣have␣the␣courage␣to␣pursue␣them.",
+            "Your␣passion␣is␣waiting␣for␣your␣courage␣to␣catch␣up.",
+            "Everything␣comes␣to␣him␣who␣hustles␣while␣he␣waits.",
+            "We␣are␣what␣we␣repeatedly␣do.␣Excellence,␣then,␣is␣not␣an␣act,␣but␣a␣habit.",
+            "Great␣things␣are␣done␣by␣a␣series␣of␣small␣things␣brought␣together.",
+            "Leaders␣can␣let␣you␣fail␣and␣yet␣not␣let␣you␣be␣a␣failure."
         ],
 
         numOfRounds: rounds,
@@ -114,12 +112,15 @@ Race = function (rounds, players, sockets) {
 
         // starts the text after 5 seconds
         setTimeout(() => {
+            // choose a random text to display from all available texts
+            var ind = Math.floor(Math.random() * this.texts.length) - 1;
+
             for (let i in players) {
                 if (players[i].canRace) {
-                    sockets[i].emit('startTyping', self.texts[self.currentRound - 1]);
+                    sockets[i].emit('startTyping', self.texts[ind]);
                 }
             }
-        }, 5000);
+        }, 3000);
 
 
         //for the disconnected players
