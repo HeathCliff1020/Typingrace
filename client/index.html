@@ -1,93 +1,173 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Typing Game</title>
+    <title>Typing Game</title>
 
-	<!-- Adding socket.io javascript file -->
-	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <!-- Adding socket.io javascript file -->
+    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 
-	<!-- External CSS and favicon -->
-	<link rel="stylesheet" type="text/css" href = "/client/css/style.css" />
-	<link rel="icon" href="/client/images/icon.ico" />
+    <!-- External CSS and favicon -->
+    <link rel="stylesheet" type="text/css" href="/client/css/style.css" />
+    <link rel="icon" href="/client/images/icon.ico" />
 
-	<!-- BootStrap CDN -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- BootStrap CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-	<!-- Google fonts -->
-	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <!-- Google fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
-	<!-- FontAwesome CDN -->
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" crossorigin="anonymous">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
+        integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" crossorigin="anonymous">
+
+    <style>
+        form {
+            border: 3px solid #f1f1f1;
+            padding: 10px;
+        }
+
+        /* Full-width inputs */
+        input[type=text],
+        input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Set a style for all buttons */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Add a hover effect for buttons */
+        button:hover {
+            opacity: 0.8;
+        }
+
+        /* Add padding to containers */
+        .container {
+            width: 40%;
+            border: 3px solid green;
+            padding: 10px;
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .heading {
+            padding: 10px;
+            top: 10%;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .w3-myfont {
+            font-family: 'Pacifico', cursive;
+            font-size: 60px;
+            color: #f02626;
+        }
+
+        body {
+            background-color: rgb(170, 250, 145);
+        }
+    </style>
 
 </head>
-<body>
 
-	<!-- Sign in div -->
-	<div id="singInDiv">
+<body background="/client/res/background.png">
 
-		<form id="signIn" name="signInForm">
+    <div class="heading">
+        <p class="w3-myfont">Typing Race</p>
+    </div>
 
-			<input type="text" id="username" />
-			<input type="password" id="password" />
+    <!-- Sign in div -->
+    <div id="singInDiv" class="container">
 
-			<input type="submit" value="Login" id="loginButton" />
+        <form id="signIn" name="signInForm">
 
-		</form>
+            <label for="username"><b>Name</b></label>
+            <input type="text" placeholder="Enter your name" id="username" name="name" required>
 
-	</div>
+            <button type="submit" id="loginButton">Login</button>
 
-	<!-- Sign in div -->
+        </form>
+
+    </div>
+
+    <!-- Sign in div -->
 
 
-	<!-- This will be shown after successful login -->
-	<!-- contains all the contents -->
-	<div class="container-fluid contents" id="mainDiv">
+    <!-- This will be shown after successful login -->
+    <!-- contains all the contents -->
+    <div class="container-fluid contents" id="mainDiv">
 
-		<div class="row">
+        <div class="row">
 
-			<!-- for spacing -->
-			<div class="col-1"></div>
+            <!-- for spacing -->
+            <div class="col-1"></div>
 
-			<!-- div to contain the racing info div and the typing window -->
-			<div class="col-7">
-				<div class="container-fluid racingInfoContainer">
-					<div class="row">
+            <!-- div to contain the racing info div and the typing window -->
+            <div class="col-7">
+                <div class="container-fluid racingInfoContainer">
+                    <div class="row">
 
-						<div class="col-12 racingInfo">
+                        <div class="col-12 racingInfo">
 
-							<div class="racingInfoheader">Racers : </div>
-							<div class="racingInfoPlayers" id="stats">
-							</div>
+                            <div class="racingInfoheader">Racers : </div>
+                            <div class="racingInfoPlayers" id="stats">
+                            </div>
 
-						</div>
+                        </div>
 
-						<div class="col-12 type" id="typingWindow"></div>
-					</div>
-				</div>
-			</div>
+                        <div class="col-12 type" id="typingWindow"></div>
+                    </div>
+                </div>
+            </div>
 
-			<!-- for spacing -->
-			<div class="col-1"></div>
+            <!-- for spacing -->
+            <div class="col-1"></div>
 
-			<div class="col-3 players">
-				 <h2 class='playerListHeadder'>Players Joined : </h2>
-				 <hr class='hr1' />
+            <div class="col-3 players">
+                <h2 class='playerListHeadder'>Players Joined : </h2>
+                <hr class='hr1' />
 
-				<div class="playerList" id="playerList"></div>
+                <div class="playerList" id="playerList"></div>
 
-				<input type="button" id="button" class="btn btn-info startButton" onclick="start();" value="Start Typing" />
+                <input type="button" id="button" class="btn btn-info startButton" onclick="start();"
+                    value="Start Typing" />
 
-			</div>
+            </div>
 
-		</div>
+        </div>
 
-	<!-- Javascript code -->
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="/client/js/players.js"></script>
-	<script type="text/javascript" src="/client/js/main.js"></script>
+        <!-- Javascript code -->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+        </script>
+        <script type="text/javascript" src="/client/js/players.js"></script>
+        <script type="text/javascript" src="/client/js/main.js"></script>
 
 </body>
+
 </html>
