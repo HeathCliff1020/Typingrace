@@ -8,7 +8,7 @@ var playerID;
 
 //declaring variables for the form items
 var usrName = document.getElementById("username");
-var usrPassword = document.getElementById("password");
+//var usrPassword = document.getElementById("password");
 
 var loginDiv = document.getElementById("singInDiv");
 var playerList = document.getElementById("playerList");
@@ -34,12 +34,15 @@ mainDiv.style.display = 'none';
 /******************************************************/
 
 // Sending the server sign In request when the user submits the form
-signInForm.onsubmit = function(e){
+signInForm.onsubmit = function (e) {
 
-	e.preventDefault();
+    e.preventDefault();
 
-	//emiting the packet
-	socket.emit('signInRequest', {username : usrName.value, password : usrPassword.value});
+    //emiting the packet
+    //socket.emit('signInRequest', {username : usrName.value, password : usrPassword.value});
+    socket.emit('signInRequest', {
+        username: usrName.value
+    });
 }
 
 /******************************************************/
@@ -53,18 +56,18 @@ signInForm.onsubmit = function(e){
 /******************************************************/
 
 // if the login was successful then show the main div
-socket.on('singInSuccess', function(data){
-	loginDiv.style.display = 'none';
-	mainDiv.style.display = 'inline-block';
+socket.on('singInSuccess', function (data) {
+    loginDiv.style.display = 'none';
+    mainDiv.style.display = 'inline-block';
 
-	playerID = data.ID;
+    playerID = data.ID;
 
-	//adding own player to the list
-	Player.addPlayer(data.ID, usrName.value, data.isAdmin);
+    //adding own player to the list
+    Player.addPlayer(data.ID, usrName.value, data.isAdmin);
 
-	//disable the start button if not admin
-	if (!data.isAdmin)
-		startButton.disabled = true;
+    //disable the start button if not admin
+    if (!data.isAdmin)
+        startButton.disabled = true;
 });
 
 /******************************************************/
@@ -75,17 +78,16 @@ socket.on('singInSuccess', function(data){
 /******************************************************/
 
 // packeage sent to initialize the players list
-socket.on('initList', function(data){
+socket.on('initList', function (data) {
 
-	//adding the ohter players to the list
+    //adding the ohter players to the list
 
-	for (var i in data)
-	{
-		var player = data[i];
+    for (var i in data) {
+        var player = data[i];
 
-		Player.addPlayer(player.id, player.username, player.isAdmin);
-	}
-	updateDisplay();
+        Player.addPlayer(player.id, player.username, player.isAdmin);
+    }
+    updateDisplay();
 });
 
 /******************************************************/
@@ -97,10 +99,10 @@ socket.on('initList', function(data){
 /******************************************************/
 
 // package sent when a new player joins the lobby
-socket.on('updateList', function(data){
+socket.on('updateList', function (data) {
 
-	Player.addPlayer(data.ID, data.username, false);
-	updateDisplay();
+    Player.addPlayer(data.ID, data.username, false);
+    updateDisplay();
 
 });
 
@@ -112,11 +114,11 @@ socket.on('updateList', function(data){
 /******************************************************/
 
 //text sent by the server
-socket.on('startTyping', function(data){
+socket.on('startTyping', function (data) {
 
-	//setting the text in the type window
-	console.log(data);
-	startTyping(data);
+    //setting the text in the type window
+    console.log(data);
+    startTyping(data);
 
 });
 
@@ -128,13 +130,13 @@ socket.on('startTyping', function(data){
 /******************************************************/
 
 //disabling the start button before the round starts
-socket.on('disableStartButton', function(){
-	startButton.disabled = true;
+socket.on('disableStartButton', function () {
+    startButton.disabled = true;
 });
 
 //enabling the start button when the round ends
-socket.on('enableStartButton', function(){
-	startButton.disabled = false;
+socket.on('enableStartButton', function () {
+    startButton.disabled = false;
 });
 
 /******************************************************/
@@ -145,20 +147,18 @@ socket.on('enableStartButton', function(){
 
 /******************************************************/
 
-socket.on('displayResults', function(data){
+socket.on('displayResults', function (data) {
 
-	typeWindow.innerHTML = "";
+    typeWindow.innerHTML = "";
 
-	for (var i in data.stats)
-	{
-		typeWindow.innerHTML += data.stats[i].username + " : " + data.stats[i].times + "   Score : " + data.stats[i].score;
-		typeWindow.innerHTML += "<br />";
-	}
+    for (var i in data.stats) {
+        typeWindow.innerHTML += data.stats[i].username + " : " + data.stats[i].times + "   Score : " + data.stats[i].score;
+        typeWindow.innerHTML += "<br />";
+    }
 
-	if (data.isComplete)
-	{
-		raceStatsDiv.innerHTML = "";
-	}
+    if (data.isComplete) {
+        raceStatsDiv.innerHTML = "";
+    }
 
 });
 
@@ -171,13 +171,13 @@ socket.on('displayResults', function(data){
 /******************************************************/
 
 // delete a disconnected player
-socket.on('deletePlayer', function(data){
+socket.on('deletePlayer', function (data) {
 
-	//checking if the player actually exists
-	if (Player.list[data])
-		delete Player.list[data];
+    //checking if the player actually exists
+    if (Player.list[data])
+        delete Player.list[data];
 
-	updateDisplay();
+    updateDisplay();
 });
 
 /******************************************************/
@@ -190,18 +190,18 @@ socket.on('deletePlayer', function(data){
 
 //updating the admin if the admin has been disconnected
 //the data contains the id of the new admin
-socket.on('beAdmin', function(data){
+socket.on('beAdmin', function (data) {
 
-	//changing the data of new admin
-	if (Player.list[data])
-		Player.list[data].isAdmin = true;
+    //changing the data of new admin
+    if (Player.list[data])
+        Player.list[data].isAdmin = true;
 
-	//cheking if the new admin is the player itself
-	//enable the start button
-	if (data === playerID)
-		startButton.disabled = false;
+    //cheking if the new admin is the player itself
+    //enable the start button
+    if (data === playerID)
+        startButton.disabled = false;
 
-	updateDisplay();
+    updateDisplay();
 
 });
 
@@ -213,18 +213,17 @@ socket.on('beAdmin', function(data){
 /******************************************************/
 
 //this will be called when the sever sends in the round updates
-socket.on('displayUpdate', function(data){
+socket.on('displayUpdate', function (data) {
 
-	let text = "";
+    let text = "";
 
-	for (let i in data)
-	{
-		text += "<div class='row raceTrack'><div class='col-2 trackName'>" + data[i].username + "</div>";
-		text += "<div class='col-10 track'><span class='avatar' style='left:" + data[i].percentage + "%;'><span class='initials2'>" + data[i].username[0].toUpperCase() + "</span></span>";
-		text += "</div></div>";
-	}
+    for (let i in data) {
+        text += "<div class='row raceTrack'><div class='col-2 trackName'>" + data[i].username + "</div>";
+        text += "<div class='col-10 track'><span class='avatar' style='left:" + data[i].percentage + "%;'><span class='initials2'>" + data[i].username[0].toUpperCase() + "</span></span>";
+        text += "</div></div>";
+    }
 
-	raceStatsDiv.innerHTML = text;
+    raceStatsDiv.innerHTML = text;
 });
 
 /******************************************************/
@@ -238,27 +237,25 @@ socket.on('displayUpdate', function(data){
 /******************************************************/
 
 //funciton to display the players information to the screen
-var updateDisplay = function()
-{
-	playerList.innerHTML = "";
+var updateDisplay = function () {
+    playerList.innerHTML = "";
 
-	for (var i in Player.list)
-	{
-		var player = Player.list[i];
+    for (var i in Player.list) {
+        var player = Player.list[i];
 
-		let text = "<div class='player'><div class='avatar-circle'><span class='initials'>" + player.username[0].toUpperCase() + "</span></div>"
+        let text = "<div class='player'><div class='avatar-circle'><span class='initials'>" + player.username[0].toUpperCase() + "</span></div>"
 
-		if (player.isAdmin)
-			text += "<span class='playerName'>" + player.username  + ": Admin</span>";
-		else
-			text += "<span class='playerName'>" + player.username + "</span>";
+        if (player.isAdmin)
+            text += "<span class='playerName'>" + player.username + ": Admin</span>";
+        else
+            text += "<span class='playerName'>" + player.username + "</span>";
 
-			text += "</div>";
+        text += "</div>";
 
 
-		playerList.innerHTML += text;
+        playerList.innerHTML += text;
 
-	}
+    }
 }
 
 /******************************************************/
@@ -267,9 +264,8 @@ var updateDisplay = function()
 /******************************************************/
 
 //function to request the server to send the text
-function start()
-{
-	socket.emit('startRace');
+function start() {
+    socket.emit('startRace');
 }
 
 /******************************************************/
@@ -305,34 +301,30 @@ let percentage = 0;
 /******************************************************/
 
 // writes the type text into the type window
-function setTheText()
-{
-	typeWindow.innerHTML = "";
+function setTheText() {
+    typeWindow.innerHTML = "";
 
-	textLen = theText.length;
+    textLen = theText.length;
 
-	newString = "<span class='expected'>" + theText[0] + "</span>";
+    newString = "<span class='expected'>" + theText[0] + "</span>";
 
-	for (var i = 1; i < textLen; i++)
-	{
-		newString += "<span class='normalText'>" + theText[i] + "</span>";
-		at++;
+    for (var i = 1; i < textLen; i++) {
+        newString += "<span class='normalText'>" + theText[i] + "</span>";
+        at++;
 
-		if (at == max)
-		{
-			while(theText[i] != '␣' && i < textLen)
-			{
-				i++;
-				newString += "<span class='normalText'>" + theText[i] + "</span>";
-			}
-			newString += "<br />";
-			at = 0;
-		}
-	}
+        if (at == max) {
+            while (theText[i] != '␣' && i < textLen) {
+                i++;
+                newString += "<span class='normalText'>" + theText[i] + "</span>";
+            }
+            newString += "<br />";
+            at = 0;
+        }
+    }
 
-	at = 0;
-	percentage = 0;
-	typeWindow.innerHTML = newString;
+    at = 0;
+    percentage = 0;
+    typeWindow.innerHTML = newString;
 }
 
 /******************************************************/
@@ -342,42 +334,39 @@ function setTheText()
 
 /******************************************************/
 
-function updateTextLook()
-{
-	var newStr = oldString;
+function updateTextLook() {
+    var newStr = oldString;
 
-	newStr += "<span class='expected'>" + theText[index] + "</span>"
+    newStr += "<span class='expected'>" + theText[index] + "</span>"
 
-	var i = 0, j = 0, val;
-	if (newLine)
-	{
-		val = 3;
-		newLine = false;
-		at = 0;
-	}
-	else
-		val = 2;
-	while(j != val)
-	{
-		if (newString[i] == '>')
-			j++;
-		i++;
-	}
+    var i = 0,
+        j = 0,
+        val;
+    if (newLine) {
+        val = 3;
+        newLine = false;
+        at = 0;
+    } else
+        val = 2;
+    while (j != val) {
+        if (newString[i] == '>')
+            j++;
+        i++;
+    }
 
-	newString = newString.slice(i);
+    newString = newString.slice(i);
 
-	i = 0;
-	j = 0;
-	while(j != 2)
-	{
-		if (newString[i] == '>')
-			j++;
-		i++;
-	}
+    i = 0;
+    j = 0;
+    while (j != 2) {
+        if (newString[i] == '>')
+            j++;
+        i++;
+    }
 
-	newStr += newString.slice(i);
+    newStr += newString.slice(i);
 
-	typeWindow.innerHTML = newStr;
+    typeWindow.innerHTML = newStr;
 
 }
 
@@ -386,82 +375,74 @@ function updateTextLook()
 
 /******************************************************/
 
-function startTyping(text)
-{
-	startTime = Math.round((new Date()).getTime() / 1000);
+function startTyping(text) {
+    startTime = Math.round((new Date()).getTime() / 1000);
 
-	theText = text;
+    theText = text;
 
-	index = 0;
-	textLen = theText.length;
+    index = 0;
+    textLen = theText.length;
 
-	lookingFor = theText[0];
+    lookingFor = theText[0];
 
-	max = 38;
-	at = 1;
+    max = 38;
+    at = 1;
 
-	oldString = "", newString;
+    oldString = "", newString;
 
-	error = false;
-	newLine = false;
+    error = false;
+    newLine = false;
 
-	setTheText();
-	document.onkeypress = function(event)
-	{
-		//console.log(theText[index]);
-		if ( ( event.keyCode == lookingFor.charCodeAt(0) ) )
-		{
-			at++;
-			//console.log(at);
+    setTheText();
+    document.onkeypress = function (event) {
+        //console.log(theText[index]);
+        if ((event.keyCode == lookingFor.charCodeAt(0))) {
+            at++;
+            //console.log(at);
 
-			if (error)
-				oldString += "<span class='error'>" + theText[index] + "</span>";
-			else
-				oldString += "<span class='inactive'>" + theText[index] + "</span>";
+            if (error)
+                oldString += "<span class='error'>" + theText[index] + "</span>";
+            else
+                oldString += "<span class='inactive'>" + theText[index] + "</span>";
 
-			if (at >= max && lookingFor == ' ')
-			{
-				newLine = true;
-				oldString += "<br />";
-			}
+            if (at >= max && lookingFor == ' ') {
+                newLine = true;
+                oldString += "<br />";
+            }
 
-			index++;
+            index++;
 
-			percentage = (100 / textLen) * (index);
+            percentage = (100 / textLen) * (index);
 
-			socket.emit('changePercentage', percentage.toFixed(2));
+            socket.emit('changePercentage', percentage.toFixed(2));
 
-			if (index >= textLen)
-			{
-				lookingFor = null;
-				var endTime = Math.round((new Date()).getTime() / 1000);
-				socket.emit('roundComplete', endTime - startTime);
+            if (index >= textLen) {
+                lookingFor = null;
+                var endTime = Math.round((new Date()).getTime() / 1000);
+                socket.emit('roundComplete', endTime - startTime);
 
-				//display the finish time and some stats
-				typeWindow.innerHTML = "Round Finished in " + (endTime - startTime) + " seconds";
+                //display the finish time and some stats
+                typeWindow.innerHTML = "Round Finished in " + (endTime - startTime) + " seconds";
 
-				document.onkeypress = function()
-				{}
+                document.onkeypress = function () {}
 
-				return;
-			}
+                return;
+            }
 
-			lookingFor = theText[index];
+            lookingFor = theText[index];
 
-			if(lookingFor == '␣')
-				lookingFor = ' ';
+            if (lookingFor == '␣')
+                lookingFor = ' ';
 
-			updateTextLook();
-			error = false;
-		}
-		else
-		{
-			error = true;
-		}
+            updateTextLook();
+            error = false;
+        } else {
+            error = true;
+        }
 
-		if (index >= textLen)
-			index = textLen - 1;
-	};
+        if (index >= textLen)
+            index = textLen - 1;
+    };
 }
 
 /******************************************************/
