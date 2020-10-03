@@ -16,6 +16,7 @@ app.get('/', function(req, res)
 app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen(2000,'0.0.0.0');
+console.log(`app listening http://localhost:2000`)
 
 var io = require('socket.io')(serv, {});
 
