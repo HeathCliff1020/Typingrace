@@ -273,7 +273,18 @@ var updateDisplay = function () {
 
 //function to request the server to send the text
 function start() {
-    socket.emit('startRace');
+    let divElement = document.getElementById('countDown');
+    let counter = 11;
+    let countDown = setInterval(() => {
+        if(counter == 1) {
+            divElement.innerHTML = '';
+            clearInterval(countDown);
+            socket.emit('startRace');
+        }else {
+            counter--;
+            divElement.innerHTML = counter
+        }
+    }, 1000)
 }
 
 /******************************************************/
