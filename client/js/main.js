@@ -113,6 +113,14 @@ socket.on('updateList', function (data) {
 
 /******************************************************/
 
+socket.on('countDown', function (data) {
+
+    //setting the text in the type window
+    console.log(data);
+    setTheText(data);
+
+});
+
 //text sent by the server
 socket.on('startTyping', function (data) {
 
@@ -278,7 +286,7 @@ function start() {
 let max = 38;
 let at = 1;
 
-let theText;
+//let theText;
 
 //varaibles to handle typing
 let index;
@@ -301,7 +309,7 @@ let percentage = 0;
 /******************************************************/
 
 // writes the type text into the type window
-function setTheText() {
+function setTheText(theText) {
     typeWindow.innerHTML = "";
 
     textLen = theText.length;
@@ -334,7 +342,7 @@ function setTheText() {
 
 /******************************************************/
 
-function updateTextLook() {
+function updateTextLook(theText) {
     var newStr = oldString;
 
     newStr += "<span class='expected'>" + theText[index] + "</span>"
@@ -378,7 +386,7 @@ function updateTextLook() {
 function startTyping(text) {
     startTime = Math.round((new Date()).getTime() / 1000);
 
-    theText = text;
+    let theText = text;
 
     index = 0;
     textLen = theText.length;
@@ -393,7 +401,7 @@ function startTyping(text) {
     error = false;
     newLine = false;
 
-    setTheText();
+    setTheText(theText);
     document.onkeypress = function (event) {
         //console.log(theText[index]);
         if ((event.keyCode == lookingFor.charCodeAt(0))) {
@@ -434,7 +442,7 @@ function startTyping(text) {
             if (lookingFor == '␣')
                 lookingFor = ' ';
 
-            updateTextLook();
+            updateTextLook(theText);
             error = false;
         } else {
             error = true;
