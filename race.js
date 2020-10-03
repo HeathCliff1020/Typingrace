@@ -41,6 +41,13 @@ Race = function (rounds, players, sockets) {
 
         //variable to keep track if any changes occur in the completion changePercentage
         hasChange: true,
+
+        // count down text
+        countDownText: [
+            "Ready",
+            "Set",
+            "Type"
+        ]
     }
     /******************************************************/
 
@@ -110,18 +117,8 @@ Race = function (rounds, players, sockets) {
             }
         }
 
-        // starts the text after 5 seconds
-        setTimeout(() => {
-            // choose a random text to display from all available texts
-            var ind = Math.floor(Math.random() * this.texts.length) - 1;
-
-            for (let i in players) {
-                if (players[i].canRace) {
-                    sockets[i].emit('startTyping', self.texts[ind]);
-                }
-            }
-        }, 3000);
-
+        // starts the race after 3 seconds, displaying a count down
+        self.countDown(players, 0, 1000);
 
         //for the disconnected players
         for (let i in self.disconnectedPlayers) {
@@ -250,6 +247,27 @@ Race = function (rounds, players, sockets) {
 
     /******************************************************/
 
+    // function that displays a countdown timer before the start of a round
+    self.countDown = function (players, num, delay) {
+        if (num > 2) {
+            var ind = Math.floor(Math.random() * this.texts.length) - 1;
 
+            for (let j in players) {
+                if (players[j].canRace) {
+                    sockets[j].emit('startTyping', self.texts[ind]);
+                }
+            }
+            return;
+        }
+
+        for (let i in players) {
+            if (players[i].canRace) {
+                sockets[i].emit('countDown', this.countDownText[num]);
+            }
+        }
+        setTimeout(function () {
+            self.countDown(players, num + 1, delay);
+        }, delay);
+    }
     return self;
 }
